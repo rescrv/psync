@@ -1,0 +1,61 @@
+psync:  iPod sync tool
+======================
+
+psync enables syncing music with an iPod from Linux using a workflow not
+enabled by other tools.  It was developed primarily to bridge the disconnect
+between the iPod's organization of music as a "library", and the author's
+preferred organization of music as nested directories replicated across
+multiple computers (with multiple roots per computer).
+
+The core principle behind psync is that each music hierarchy is stored in one
+directory that has been initialized for use with psync:
+
+    psync init-music /path/to/music
+
+Once the directory is initialized, any music in a subdirectory can be copied
+to the iPod:
+
+    psync copy-to-ipod /mnt/ipod /path/to/music/Pink_Floyd
+    psync copy-to-ipod /mnt/ipod /path/to/music/The_Offspring
+
+Similarly, music can be removed from the iPod:
+
+    psync remove-from-ipod /mnt/ipod /path/to/music/The_Offspring/Splinter
+
+Tracking Music
+--------------
+
+Music is tracked by a checksum of the file.  Files on the iPod are tagged with
+this checksum, while files on the computer have the checksum computed on them
+directly.  When transferring music to the iPod, psync constructs a list of
+checksums that must be transferred, reads the list of checksums on the iPod,
+and transfers the set difference of the former and the latter.
+
+This algorithm works well to enable psync to move music from multiple
+different locations to the same iPod.  Where the music is in common between
+locations it will only be copied to the iPod once.  For example, the author's
+desktop machine holds his entire music collection, while only a subset is
+available on his laptop.  Music from either computer may be transferred to the
+iPod and will not be doubly-transferred when the iPod syncs with another
+computer.
+
+There's a baked in assumption that music will be not be changing in any way by
+the time it gets transferred to the iPod.  Re-tagging music, or otherwise
+altering the source files will break psync's tracking.
+
+psync provides a built-in command to speed-up the music tracking process:
+
+    psync index-music /path/to/music
+
+This command pre-supposes that the directory to be indexed, or one of its
+direct parents has previously been initialized for use with psync.
+
+Transcoding
+-----------
+
+Internally, psync uses ffmpeg, mplayer, and neroAacEnc to transcode all source
+material into consistent bitrate files for the iPod.  This is done by default
+and not configurable at the moment.  The rationale for this is that the
+author's music collection is primarily flac files ripped from CD, which must
+be transcoded to a format the iPod can support.  AAC provides a good balance
+of quality and size.

@@ -1,0 +1,6 @@
+/build/
+/dist/
+/psync.egg-info/
+/psync/gpod.o
+/psync/gpod.so
+/psync/__pycache__/
